@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="#f7f7f7"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize">
+        <TextView
+            android:id="@+id/title"
+            android:text="选择天气"
+            android:layout_centerInParent="true"
+            android:textSize="20sp"
+            android:textColor="#fff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/bt_back"
+            android:textColor="#fff"
+            android:text="返回上一级"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginLeft="12dip"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <ListView
+        android:id="@+id/listView"
+        android:name="com.integration.weather.ChooseAreaFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:scrollbars="none"
+        android:listSelector="@android:color/transparent"
+        tools:context=".ChooseAreaFragment"
+        tools:listitem="@layout/fragment_item" />
+
+
+</LinearLayout>

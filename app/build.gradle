@@ -1,0 +1,156 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "com.integration.weather"
+        minSdkVersion 19
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            //选择要添加的对应 cpu 类型的 .so 库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+    }
+
+    signingConfigs {
+        release {
+            keyAlias 'integration'
+            keyPassword 'integration999'
+            storePassword 'integration999'
+            storeFile file('sign/keystore.jks')
+
+        }
+    }
+
+    configurations {
+        all*.exclude group: 'com.google.code.gson'
+        all*.exclude group: 'com.squareup.okio'
+    }
+    buildTypes {
+        release {
+            resValue("string", "app_name", "天气")
+            buildConfigField("boolean", "LOG_DEBUG", "false")
+            buildConfigField("boolean", "BETA", "false")
+            shrinkResources true
+            zipAlignEnabled true
+            minifyEnabled true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            //输出的为渠道包的名字，例如 xiaomi.apk
+//            applicationVariants.all { variant ->
+//                variant.outputs.each { output ->
+//                    def outFile = output.outputFile
+//                    if (outFile != null && outFile.name.endsWith(".apk")) {
+//                        def fileName = "${variant.productFlavors[0].name}" + ".apk"
+//                        output.outputFile = new File(outFile.parent, fileName)
+//                    }
+//                }
+//            }
+        }
+
+        debug {
+//            applicationIdSuffix ".beta"
+            resValue("string", "app_name", "天气")
+            buildConfigField("boolean", "LOG_DEBUG", "true")
+            buildConfigField("boolean", "BETA", "false")
+            shrinkResources false
+            minifyEnabled false
+        }
+
+        flavorDimensions "a"
+        /*配置渠道*/
+        productFlavors {
+            anzhi {
+                dimension "a"
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "anzhi"]
+            }
+            qihoo {
+                dimension "a"
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "qihoo"]
+            }
+            yingyongbao {
+                dimension "a"
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "yingyongbao"]
+            }
+            xiaomi {
+                dimension "a"
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "xiaomi"]
+            }
+            youqu {
+                dimension "a"
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "youqu"]
+            }
+            pugongying {
+                dimension "a"
+                manifestPlaceholders = [UMENG_CHANNEL_VALUE: "pugongying"]
+            }
+            //批量配置
+//            productFlavors.all { flavor ->
+//                flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+//            }
+        }
+    }
+}
+
+
+def getVersionCode() {
+    def versionSplit = getVersionName().split("\\.")
+    println(versionSplit.toString())
+    StringBuffer sb = new StringBuffer();
+    for (item in versionSplit) {
+        switch (item.length()) {
+            case 1:
+                sb.append('00');
+                sb.append(item);
+                break
+            case 2:
+                sb.append('0');
+                sb.append(item);
+                break
+            case 3:
+                sb.append(item);
+                break
+            default:
+                throw new GradleException("version name is error !")
+                break
+        }
+    }
+    return sb.toInteger()
+
+}
+def getVersionName() {
+    def versionFile = file('version.properties')
+
+    if (versionFile.exists()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionFile))
+        def versionCode = versionProps['build.name'].toString()
+        return versionCode
+    } else {
+        throw new GradleException("Could not find version.properties!")
+    }
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0-beta01'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.1'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+//    implementation 'org.litepal.android:java:3.0.0'
+    implementation 'com.squareup.okio:okio:1.6.1'
+    implementation 'com.mapzen:on-the-road:0.8.1'
+    implementation 'org.litepal.android:core:1.3.2'
+
+}
